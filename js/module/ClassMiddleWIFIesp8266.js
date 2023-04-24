@@ -28,7 +28,7 @@
  * 
  * Методы аутентификации следующие: open, wep, wpa_psk, wpa2_psk, wpa_wpa2_psk
  */
-class ClassEsp8266 {
+class ClassEsp8266WiFi {
     /**
      * @constructor
      * @param {Object} _Bus   - - объект класса UARTBus
@@ -57,41 +57,20 @@ class ClassEsp8266 {
      * @method
      * Создаёт новое подключение к уже
      * существующей WiFi-сети
-     * @param {string} _ssid  - SSID сети
-     * @param {string} _pass  - пароль сети
+     * @param {string} _ssid    - SSID сети
+     * @param {string} _pass    - пароль сети
+     * @returns {string} _scs   - сообщение об успехе
      */
     Connect(_ssid, _pass) {
+        let _scs = 'Conncetion successful';
         this.wifi.connect(_ssid, _pass, function(emsg) {
             if (emsg) {
                 throw new err (emsg, this.ecode);
             }
           });
+          return _scs;
     }
-    /**
-     * @method
-     * Осуществляет отправку сообщений по сети с
-     * использованием протокола HTTP
-     * @param {ObjectHTTPOpts} _opts    - параметры соединения
-     * @param {string} _body            - тело запроса (для POST должно быть не пустым)
-     * @returns {string} ret_data       - информация о результате запроса
-     */
-    HttpRequest(_opts, _body) {
-        let ret_data;
-        let req = require("http").request(options, function(res) {
-            res.on('data', function(data) {
-                ret_data += data;
-            });
-            res.on('close', function() {
-                ret_data += "\nConnection closed\n";
-            });
-          });
-          if (_body && _opts.method == 'POST') {
-            req.write(_body);
-            ret_data += "\nPOST complete\n";
-          }
-          req.end();
-          return ret_data;
-    }
+    // отладить возвращаемое значение, выкинуть мусор
     /**
      * @method
      * Возвращает IP адрес, полученный модулем от
@@ -138,6 +117,7 @@ class ClassEsp8266 {
           });
         return _ver;
     }
+    // проверить какой ip
     /**
      * @method
      * Создаёт WiFi-сеть. Модуль начинает работать в
@@ -176,4 +156,4 @@ class ClassEsp8266 {
     }
 }
 
-exports = ClassEsp8266;
+exports = ClassEsp8266WiFi;
