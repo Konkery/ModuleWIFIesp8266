@@ -37,6 +37,7 @@ class ClassEsp8266WiFi {
         this.name = 'ClassEsp8266WiFi'; //переопределяем имя типа
         this.wifi = undefined;
         this.ecode = 12;
+        print('Constructor\n');
         this.Init(_Bus);
 	}
     /**
@@ -47,6 +48,7 @@ class ClassEsp8266WiFi {
     Init(_Bus)
     {
         let req = 'https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js';
+        print('Init\n');
         this.wifi = require(req).setup(PrimarySerial, function(emsg) {
             if (emsg) {
                 throw new err (emsg, this.ecode);
