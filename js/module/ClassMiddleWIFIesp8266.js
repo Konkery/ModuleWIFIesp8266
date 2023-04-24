@@ -34,7 +34,7 @@ class ClassEsp8266WiFi {
      * @param {Object} _Bus   - - объект класса UARTBus
      */
     constructor(_Bus) {
-        this.name = 'ClassEsp8266'; //переопределяем имя типа
+        this.name = 'ClassEsp8266WiFi'; //переопределяем имя типа
         this.wifi = undefined;
         this.ecode = 12;
         this.Init(_Bus);
@@ -47,7 +47,7 @@ class ClassEsp8266WiFi {
     Init(_Bus)
     {
         let req = 'https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js';
-        this.wifi = require(req).setup(_Bus, function(emsg) {
+        this.wifi = require(req).setup(PrimarySerial, function(emsg) {
             if (emsg) {
                 throw new err (emsg, this.ecode);
             }
