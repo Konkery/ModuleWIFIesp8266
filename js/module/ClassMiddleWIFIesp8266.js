@@ -34,6 +34,13 @@ class ClassEsp8266WiFi {
      * @param {Object} _Bus   - - объект класса UARTBus
      */
     constructor(_Bus) {
+        //реализация паттерна синглтон
+        if (this.Instance) {
+            return this.Instance;
+        } else {
+            ClassEsp8266WiFi.prototype.Instance = this;
+        }
+
         this.name = 'ClassEsp8266WiFi'; //переопределяем имя типа
         this.wifi = undefined;
         this.ecode = 12;
@@ -50,10 +57,10 @@ class ClassEsp8266WiFi {
         //print(_Bus);
         this.wifi = require(req).setup(_Bus, function(emsg) {
             if (emsg) {
-                print(emsg);
                 throw new err (emsg, this.ecode);
             }
         });
+        print('Hey');
     }
     /**
      * @method
