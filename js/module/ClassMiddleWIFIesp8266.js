@@ -47,7 +47,7 @@ class ClassEsp8266WiFi {
     Init(_Bus)
     {
         let req = 'https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js';
-        print(_Bus);
+        //print(_Bus);
         this.wifi = require(req).setup(_Bus, function(emsg) {
             if (emsg) {
                 print(emsg);
