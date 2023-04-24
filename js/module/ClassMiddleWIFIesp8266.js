@@ -60,6 +60,12 @@ class ClassEsp8266WiFi {
                 throw new err (emsg, this.ecode);
             }
             print('Hey2');
+            this.wifi.getAPs(function (emsg, aps) {
+                if (emsg) {
+                    throw new err (emsg, this.ecode);
+                }
+                console.log(aps);
+            });
         });
         print('Hey');
     }
