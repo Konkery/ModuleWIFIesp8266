@@ -53,10 +53,8 @@ class ClassEsp8266WiFi {
      */
     Init(_Bus)
     {
-        let req = 'https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js';
-        //print(_Bus);
         print('Hey4');
-        let wf = require('https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js').setup(_Bus, function(emsg) {
+        this.wifi = require('https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js').setup(_Bus, function(emsg) {
             if (emsg) {
                 print('Hey3');
                 throw new err (emsg, this.ecode);
@@ -64,7 +62,6 @@ class ClassEsp8266WiFi {
             print('Hey2');
         });
         print('Hey');
-        this.wifi = wf;
     }
     /**
      * @method
