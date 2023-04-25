@@ -56,7 +56,7 @@ class ClassEsp8266WiFi {
         print('Hey4');
         this.wifi = require('https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js').setup(_Bus, function(emsg) {
             if (emsg) {
-                print('Hey3');
+                print(emsg);
                 throw new err (emsg, this.ecode);
             }
             print('Hey2');
@@ -64,7 +64,7 @@ class ClassEsp8266WiFi {
                 if (emsg) {
                     throw new err (emsg, this.ecode);
                 }
-                console.log(aps);
+                print(aps);
             });
         });
         print('Hey');
