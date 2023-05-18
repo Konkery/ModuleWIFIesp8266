@@ -57,7 +57,7 @@ class ClassEsp8266WiFi {
         if (err) {
             console.log('Module connection error! ' + err)
         }
-      console.log(this.GetAPs());
+        this.GetAPs()
     });
     }
     /**
@@ -107,6 +107,7 @@ class ClassEsp8266WiFi {
             }
             _aps = aps;
         });
+        console.log(_aps);
         return _aps;
     }
     /**
