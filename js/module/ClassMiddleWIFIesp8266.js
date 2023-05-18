@@ -33,7 +33,7 @@ class ClassEsp8266WiFi {
      * @constructor
      * @param {Object} _Bus   - - объект класса UARTBus
      */
-    constructor(_Bus) {
+    constructor(_Bus, ssid, pass) {
         //реализация паттерна синглтон
         if (this.Instance) {
             return this.Instance;
@@ -43,6 +43,8 @@ class ClassEsp8266WiFi {
 
         this.name = 'ClassEsp8266WiFi'; //переопределяем имя типа
         this.wifi = undefined;
+        this.ssid = ssid;
+        this.pass = pass;
         this.ecode = 12;
         this.Init(_Bus);
 	}
@@ -54,11 +56,35 @@ class ClassEsp8266WiFi {
     Init(_Bus)
     {
         this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(_Bus, function (err) {
-        if (err) {
-            console.log('Module connection error! ' + err)
-        }
-        this.GetAPs()
-    });
+            if (err) {
+                console.log('Module connection error! ' + err)
+            }
+            if (this.ssid != undefined && this.pass != undefined) {
+                this.Connect(this.ssid,this.pass);
+            }
+            else {
+                this.wifi.getAPs(function(err, aps) {
+                        if (err) {
+                            console.log('Error looking for APs: ' + err)
+                        }
+                        else {
+                            let found = aps.map(a => a.ssid);
+                            let wrt = require("Storage").readJSON("APs.json", true);
+                            let i = 0;
+                            let j = 0;
+
+                            for (i; i < wrt.length; i++) {
+                                for (j; j < found.length; j++) {
+                                    if (found[j] == wrt[i].ssid) {
+                                        this.Connect(wrt[i].ssid, wrt[i].pass);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    });
+            }
+        });
     }
     /**
      * @method
