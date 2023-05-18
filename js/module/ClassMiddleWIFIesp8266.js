@@ -53,21 +53,12 @@ class ClassEsp8266WiFi {
      */
     Init(_Bus)
     {
-        print('Hey4');
-        this.wifi = require('https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js').setup(_Bus, function(emsg) {
-            if (emsg) {
-                print(emsg);
-                throw new err (emsg, this.ecode);
-            }
-            print('Hey2');
-            this.wifi.getAPs(function (emsg, aps) {
-                if (emsg) {
-                    throw new err (emsg, this.ecode);
-                }
-                print(aps);
-            });
-        });
-        print('Hey');
+        this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(_Bus, function (err) {
+        if (err) {
+            console.log('Module connection error! ' + err)
+        }
+      console.log(this.getAPs());
+    });
     }
     /**
      * @method
@@ -108,7 +99,7 @@ class ClassEsp8266WiFi {
      * Возвращает информацию о найденных точках доступа
      * @returns {ObjectAP} _aps  - найденные точки доступа
      */
-    GetAPs() {
+    getAPs() {
         let _aps;
         this.wifi.getAPs(function (emsg, aps) {
             if (emsg) {
