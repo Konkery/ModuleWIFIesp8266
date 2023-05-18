@@ -57,7 +57,7 @@ class ClassEsp8266WiFi {
         if (err) {
             console.log('Module connection error! ' + err)
         }
-      console.log(this.getAPs());
+      console.log(this.GetAPs());
     });
     }
     /**
@@ -99,7 +99,7 @@ class ClassEsp8266WiFi {
      * Возвращает информацию о найденных точках доступа
      * @returns {ObjectAP} _aps  - найденные точки доступа
      */
-    getAPs() {
+    GetAPs() {
         let _aps;
         this.wifi.getAPs(function (emsg, aps) {
             if (emsg) {
