@@ -31,9 +31,10 @@
 class ClassEsp8266WiFi {
     /**
      * @constructor
-     * @param {Object} _Bus   - - объект класса UARTBus
-     */
-    constructor(_Bus, ssid, pass) {
+     * @param {Object} _rx      - порт rx шины UART, обязательное поле
+     * @param {Object} _tx      - порт tx шины UART, обязательное поле
+     */// удалить, потом добавить в конфигурацию. Основа - ESP32
+    constructor(_rx, _tx) {
         //реализация паттерна синглтон
         if (this.Instance) {
             return this.Instance;
@@ -43,48 +44,87 @@ class ClassEsp8266WiFi {
 
         this.name = 'ClassEsp8266WiFi'; //переопределяем имя типа
         this.wifi = undefined;
-        this.ssid = ssid;
-        this.pass = pass;
-        this.ecode = 12;
-        this.Init(_Bus);
+        this.ssid = undefined;
+        this.pass = undefined;
+        this.InitBus(_rx, _tx);
+        this.ScanForAPs();
+        this.Connect(this.ssid,this.pass);
 	}
     /**
-     * Метод начальной инициализации выкидывает ошибку, определенную в базовом классе,
-     * если не удалось установить соединение
-     * @param {Object} _Bus   - - объект класса UARTBus
+     * @method
+     * Инициализирует шину для работы с вай-фай модулем
+     * @param {Object} _rx      - порт rx шины UART, обязательное поле
+     * @param {Object} _tx      - порт tx шины UART, обязательное поле
      */
-    Init(_Bus)
-    {
-        this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(_Bus, function (err) {
-            if (err) {
-                console.log('Module connection error! ' + err)
-            }
-            if (this.ssid != undefined && this.pass != undefined) {
-                this.Connect(this.ssid,this.pass);
-            }
-            else {
-                this.wifi.getAPs(function(err, aps) {
-                        if (err) {
-                            console.log('Error looking for APs: ' + err)
-                        }
-                        else {
-                            let found = aps.map(a => a.ssid);
-                            let wrt = require("Storage").readJSON("APs.json", true);
-                            let i = 0;
-                            let j = 0;
-
-                            for (i; i < wrt.length; i++) {
-                                for (j; j < found.length; j++) {
-                                    if (found[j] == wrt[i].ssid) {
-                                        this.Connect(wrt[i].ssid, wrt[i].pass);
-                                        break;
-                                    }
+    InitBus(_rx, _tx) {
+        let bus_class = new UARTBus();
+        let opt = {rx: _rx, tx: _tx, baud: 115200};
+        this.bus = bus_class.AddBus(opt);
+    }
+    /**
+     * @method
+     * Сканирует окружение на наличие точек доступа и выбирает
+     * из знакомых к какой подключится
+     */
+    ScanForAPs() {
+        // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
+        let wifi;
+        if (true) {
+            wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, function (err) {
+                if (err) {
+                    console.log('Module connection error! ' + err)
+                }
+                wifi.getAPs(function(err, aps) {
+                    if (err) {
+                        console.log('Error looking for APs: ' + err)
+                    }
+                    else {
+                        let found = aps.map(a => a.ssid);
+                        let wrt = require("Storage").readJSON("APs.json", true);
+                        let i = 0;
+                        let j = 0;
+                        
+                        for (i; i < wrt.length; i++) {
+                            for (j; j < found.length; j++) {
+                                if (found[j] == wrt[i].ssid) {
+                                    this.ssid = wrt[i].ssid;
+                                    this.pass = wrt[i].pass;
+                                    break;
                                 }
                             }
                         }
-                    });
-            }
-        });
+                    }
+                });
+            })
+        }
+        else {
+            wifi = require("wifi").setup(function (err) {
+                if (err) {
+                    console.log('Module connection error! ' + err)
+                }
+                wifi.getAPs(function(err, aps) {
+                    if (err) {
+                        console.log('Error looking for APs: ' + err)
+                    }
+                    else {
+                        let found = aps.map(a => a.ssid);
+                        let wrt = require("Storage").readJSON("APs.json", true);
+                        let i = 0;
+                        let j = 0;
+                        
+                        for (i; i < wrt.length; i++) {
+                            for (j; j < found.length; j++) {
+                                if (found[j] == wrt[i].ssid) {
+                                    this.ssid = wrt[i].ssid;
+                                    this.pass = wrt[i].pass;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+        }
     }
     /**
      * @method
@@ -92,23 +132,48 @@ class ClassEsp8266WiFi {
      * существующей WiFi-сети
      * @param {string} _ssid    - SSID сети
      * @param {string} _pass    - пароль сети
-     * @returns {string} _scs   - сообщение об успехе
      */
     Connect(_ssid, _pass) {
-        let _scs = 'Conncetion successful';
-        this.wifi.connect(_ssid, _pass, function(emsg) {
-            if (emsg) {
-                throw new err (emsg, this.ecode);
+        let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, function (err) {
+            if (err) {
+                console.log('Module connection error! ' + err);
             }
-          });
-          return _scs;
+            wifi.connect (_ssid, _pass, function (err) {
+                if (err) {
+                    console.log('Connection failed! ' + err);
+                }
+                console.log('Connected!');
+                // Бип! - добавить метод на писк бипера
+            })
+        });
+        this.wifi = wifi;
+        this.AddToList();
     }
-    // отладить возвращаемое значение, выкинуть мусор
+    /**
+     * @method
+     * Метод добавляет текущее подключение в конфигурационный файл,
+     * если сети там ещё нет
+     */
+    AddToList() {
+        let i = 0;
+        let flag = false;
+        let wrt = require("Storage").readJSON("APs.json", true);
+        for (i; i < wrt.length; i++) {
+            if (this.ssid == wrt[i].ssid) {
+                flag = true;
+                break;
+                }
+            }
+        if (!flag) {
+            wrt.push({ssid: this.ssid, pass: this.pass});
+            require("Storage").writeJSON("APs.json", wrt); 
+        }
+    }
     /**
      * @method
      * Возвращает IP адрес, полученный модулем от
      * точки доступа при подключении
-     * @returns {string} _ip   -ip адрес
+     * @returns {Object} _ip   -ip адрес
      */
     GetIP() {
         let _ip;
