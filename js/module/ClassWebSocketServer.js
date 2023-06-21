@@ -37,7 +37,7 @@ class ClassWSServer {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(page);
         }
-
+        console.log("Wubbalubba");
         var server = require('ws').createServer(onPageRequest);
         server.listen(8000);
         server.on("websocket", function(ws) {
