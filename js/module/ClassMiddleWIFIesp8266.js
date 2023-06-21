@@ -91,8 +91,10 @@ class ClassEsp8266WiFi {
                                 if (fName == sName.ssid) {
                                     this.ssid = sName.ssid;
                                     this.pass = sName.pass;
+                                    console.log (this.ssid + " " + this.pass);
+                                    return;
                                 }
-                                console.log (sName.ssid + " " + sName.pass);
+                               
                             })
                         })
                     }
