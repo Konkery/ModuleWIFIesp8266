@@ -85,19 +85,16 @@ class ClassEsp8266WiFi {
                         let i = 0;
                         let j = 0;
                         console.log (wrt.length);
-                        
-                        for (i; i < wrt.length; i++) {
-                            for (j; j < found.length; j++) {
-                                if (found[j] == wrt[i].ssid) {
-                                    this.ssid = wrt[i].ssid;
-                                    this.pass = wrt[i].pass;
-                                    break;
+
+                        found.forEach(fName => {
+                            wrt.forEach(sName => {
+                                if (fName == sName.ssid) {
+                                    this.ssid = sName.ssid;
+                                    this.pass = sName.pass;
                                 }
-                                else {
-                                    console.log (found[j] + " " + wrt[i].ssid);
-                                }
-                            }
-                        }
+                                console.log (sName.ssid + " " + sName.pass);
+                            })
+                        })
                     }
                 });
             })
