@@ -70,7 +70,7 @@ class ClassEsp8266WiFi {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         let wifi;
         if (true) {
-            wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, function (err) {
+            wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
                 }
@@ -134,7 +134,7 @@ class ClassEsp8266WiFi {
      * @param {string} _pass    - пароль сети
      */
     Connect(_ssid, _pass) {
-        let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, function (err) {
+        let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
             if (err) {
                 console.log('Module connection error! ' + err);
             }
@@ -145,6 +145,12 @@ class ClassEsp8266WiFi {
                 console.log('Connected!');
                 // Бип! - добавить метод на писк бипера
             })
+            wifi.getIP(function (emsg, ipAdress) {
+                if (emsg) {
+                    throw new err (emsg, this.ecode);
+                }
+                console.log(ipAdress);
+            });
         });
         this.wifi = wifi;
         this.AddToList();
