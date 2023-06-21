@@ -27,7 +27,24 @@ class ClassWSServer {
      * Метод создания вебсокет-сервера
      */
     Init() {
-        this.server = require('ws').createServer((req, res) => {
+        var page = '<html><body><script>var ws;setTimeout(function(){';
+        page += 'ws = new WebSocket("ws://" + location.host + "/my_websocket", "protocolOne");';
+        page += 'ws.onmessage = function (event) { console.log("MSG:"+event.data); };';
+        page += 'setTimeout(function() { ws.send("Hello to Espruino!"); }, 1000);';
+        page += '},1000);</script></body></html>';
+
+        function onPageRequest(req, res) {
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(page);
+        }
+
+        var server = require('ws').createServer(onPageRequest);
+        server.listen(8000);
+        server.on("websocket", function(ws) {
+            ws.on('message',function(msg) { print("[WS] "+JSON.stringify(msg)); });
+            ws.send("Hello from Espruino!");
+        });
+        /*this.server = require('ws').createServer((req, res) => {
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.end('');
         });
@@ -53,7 +70,7 @@ class ClassWSServer {
                 this.proxy.RemoveSub(connection.key);
                 console.log('Disconnected ' + connection.remoteAddress);
             });
-        });
+        });*/
     }
     /**
      * @method
