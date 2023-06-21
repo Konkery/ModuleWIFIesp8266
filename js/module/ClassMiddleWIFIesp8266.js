@@ -140,7 +140,7 @@ class ClassEsp8266WiFi {
             }
             wifi.connect (_ssid, _pass, function (err) {
                 if (err) {
-                    console.log('Connection failed! ' + err);
+                    console.log(_ssid + " " +  _pass + '\nConnection failed! ' + err);
                 }
                 console.log('Connected!');
                 // Бип! - добавить метод на писк бипера
