@@ -45,7 +45,7 @@ class ClassWSServer {
                 const dataName = message.type + 'Data';
                 const data = message[dataName];
 
-                this.proxyWS.Receive(data, connection.key); //####
+                this.proxy.Receive(data, connection.key); //####
             });
             connection.on('close', (rCode, desc) => {
                 let index = this.clients.indexOf(connection);
