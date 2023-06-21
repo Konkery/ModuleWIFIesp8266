@@ -35,7 +35,8 @@ class ClassWSServer {
         this.server.listen(this.port, () => {
             console.log('Listen to port ' + this.port);
         });
-        this.server.on('request', req => {
+        this.server.on("websocket", req => {
+            console.log(req);
             const connection = req.accept('', req.origin);
             connection.key = req.headers['sec-websocket-key']; //#### 
             this.clients.push(connection);        
