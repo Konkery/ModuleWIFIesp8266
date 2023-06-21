@@ -84,6 +84,7 @@ class ClassEsp8266WiFi {
                         let wrt = require("Storage").readJSON("APs.json", true);
                         let i = 0;
                         let j = 0;
+                        console.log (wrt.length);
                         
                         for (i; i < wrt.length; i++) {
                             for (j; j < found.length; j++) {
