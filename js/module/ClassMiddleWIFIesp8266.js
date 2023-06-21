@@ -137,7 +137,7 @@ class ClassEsp8266WiFi {
             if (err) {
                 console.log('Module connection error! ' + err);
             }
-            wifi.connect ('Gorizont-Zero', 'gorizont#zero', function (err) {
+            wifi.connect (this.ssid, this.pass, function (err) {
                 if (err) {
                     console.log(this.ssid + " " +  this.pass + '\nConnection failed! ' + err);
                 }
