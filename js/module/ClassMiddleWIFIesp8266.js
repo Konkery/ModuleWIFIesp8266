@@ -69,8 +69,9 @@ class ClassEsp8266WiFi {
     ScanForAPs() {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         let wifi;
+        Serial3.setup(115200);
         if (true) {
-            wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, function (err) {
+            wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3.bus, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
                 }
@@ -81,6 +82,7 @@ class ClassEsp8266WiFi {
                     else {
                         let found = aps.map(a => a.ssid);
                         let wrt = require("Storage").readJSON("APs.json", true);
+                        console.log (found);
 
                         found.forEach(fName => {
                             wrt.forEach(sName => {
@@ -131,7 +133,7 @@ class ClassEsp8266WiFi {
      * существующей WiFi-сети
      */
     Connect() {
-        let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, function (err) {
+        let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3.bus, function (err) {
             if (err) {
                 console.log('Module connection error! ' + err);
             }
