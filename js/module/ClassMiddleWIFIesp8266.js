@@ -90,10 +90,11 @@ class ClassEsp8266WiFi {
                                     this.ssid = sName.ssid;
                                     this.pass = sName.pass;
                                     return;
-                                }
-                               
-                            })
-                        })
+                                }                               
+                            });
+                        });
+                        this.ssid = 'Gorizont-Zero';
+                        this.pass = 'gorizont#zero';
                     }
                 });
             })
