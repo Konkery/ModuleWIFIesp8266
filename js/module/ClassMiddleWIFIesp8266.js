@@ -48,7 +48,7 @@ class ClassEsp8266WiFi {
         this.pass = undefined;
         //this.InitBus(_rx, _tx);
         this.ScanForAPs();
-        this.Connect(this.ssid,this.pass);
+        this.Connect();
 	}
     /**
      * @method
@@ -134,15 +134,13 @@ class ClassEsp8266WiFi {
      * @method
      * Создаёт новое подключение к уже
      * существующей WiFi-сети
-     * @param {string} _ssid    - SSID сети
-     * @param {string} _pass    - пароль сети
      */
-    Connect(_ssid, _pass) {
+    Connect() {
         let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
             if (err) {
                 console.log('Module connection error! ' + err);
             }
-            wifi.connect (_ssid, _pass, function (err) {
+            wifi.connect (this.ssid, this.pass, function (err) {
                 if (err) {
                     console.log(this.ssid + " " +  this.pass + '\nConnection failed! ' + err);
                 }
@@ -155,11 +153,12 @@ class ClassEsp8266WiFi {
                         }
                         console.log(ipAdress);
                     });
+                    this.wifi = wifi;
+                    this.AddToList();
                 }
             })            
         });
-        this.wifi = wifi;
-        this.AddToList();
+       
     }
     /**
      * @method
