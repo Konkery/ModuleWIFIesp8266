@@ -46,7 +46,7 @@ class ClassEsp8266WiFi {
         this.wifi = undefined;
         this.ssid = undefined;
         this.pass = undefined;
-        this.InitBus(_rx, _tx);
+        //this.InitBus(_rx, _tx);
         this.ScanForAPs();
         this.Connect();
 	}
@@ -150,8 +150,8 @@ class ClassEsp8266WiFi {
                         }
                         console.log("IP: " + ipAdress);
                     });
-                    this.wifi = wifi;
-                    this.AddToList();
+                    //this.wifi = wifi;
+                    //this.AddToList();
                 }
             })            
         });
