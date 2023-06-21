@@ -18,7 +18,7 @@ class ClassWSServer {
         this.name = 'ClassWSServer'; //переопределяем имя типа
         this.server = undefined;
         this.proxy = new ProxyWS(this);
-        this.port = undefined;
+        this.port = 8000;
         this.clients = [];
         this.Init();
 	}
@@ -31,7 +31,7 @@ class ClassWSServer {
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.end('');
         });
-        if (this.port == undefined) this.port = 8000;
+        //if (this.port == undefined) this.port = 8000;
         this.server.listen(this.port);
         console.log('Listen to ' + this.port);
         this.server.on("websocket", req => {
