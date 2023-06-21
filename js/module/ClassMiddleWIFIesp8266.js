@@ -144,7 +144,7 @@ class ClassEsp8266WiFi {
             }
             wifi.connect (_ssid, _pass, function (err) {
                 if (err) {
-                    console.log(_ssid + " " +  _pass + '\nConnection failed! ' + err);
+                    console.log(this.ssid + " " +  this.pass + '\nConnection failed! ' + err);
                 }
                 else {
                     console.log('Connected!');
