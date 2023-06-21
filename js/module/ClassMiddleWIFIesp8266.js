@@ -142,15 +142,17 @@ class ClassEsp8266WiFi {
                 if (err) {
                     console.log(_ssid + " " +  _pass + '\nConnection failed! ' + err);
                 }
-                console.log('Connected!');
-                // Бип! - добавить метод на писк бипера
-            })
-            wifi.getIP(function (emsg, ipAdress) {
-                if (emsg) {
-                    throw new err (emsg, this.ecode);
+                else {
+                    console.log('Connected!');
+                    // Бип! - добавить метод на писк бипера
+                    wifi.getIP(function (emsg, ipAdress) {
+                        if (emsg) {
+                            throw new err (emsg, this.ecode);
+                        }
+                        console.log(ipAdress);
+                    });
                 }
-                console.log(ipAdress);
-            });
+            })            
         });
         this.wifi = wifi;
         this.AddToList();
