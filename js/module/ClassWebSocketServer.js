@@ -17,7 +17,7 @@ class ClassWSServer {
 
         this.name = 'ClassWSServer'; //переопределяем имя типа
         this.server = undefined;
-        this.proxy = undefined;
+        this.proxy = new ProxyWS(this);
         this.port = undefined;
         this.clients = [];
         this.Init();
