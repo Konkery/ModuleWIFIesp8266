@@ -48,8 +48,8 @@ class ClassWSServer {
                 // TODO: организовать отправку пакета прокси как клиенту сервера
                 // Организовать рассылку сообщений клиентам (только нужному типу (или нескольким?) и не самому себе)
                 this.clients.forEach(client => {
-                    if (connection !== client.connection) {
-                        client.connection.send(data);
+                    if (connection !== client) {
+                        client.send(data);
                     }
                 });
             });
