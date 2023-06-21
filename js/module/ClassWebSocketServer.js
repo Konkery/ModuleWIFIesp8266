@@ -32,9 +32,8 @@ class ClassWSServer {
             res.end('');
         });
         if (this.port == undefined) this.port = 8000;
-        this.server.listen(this.port, () => {
-            console.log('Listen to port ' + this.port);
-        });
+        this.server.listen(this.port);
+        console.log('Listen to ' + this.port);
         this.server.on("websocket", req => {
             console.log(req);
             const connection = req.accept('', req.origin);
