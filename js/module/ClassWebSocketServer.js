@@ -50,6 +50,7 @@ class ClassWSServer {
             connection.on('close', (rCode, desc) => {
                 let index = this.clients.indexOf(connection);
                 this.clients.splice(index,1);
+                this.proxy.RemoveSub(connection.key);
                 console.log('Disconnected ' + connection.remoteAddress);
             });
         });
