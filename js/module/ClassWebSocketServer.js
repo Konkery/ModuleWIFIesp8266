@@ -62,7 +62,7 @@ class ClassWSServer {
      * @param {String} data 
      * @param {[String]} keys 
      */
-    Receive(data, keys) {
+    Notify(data, keys) {
         this.clients.filter(client => keys.includes(client.key)).forEach(client => {
             client.send(data);
         });
