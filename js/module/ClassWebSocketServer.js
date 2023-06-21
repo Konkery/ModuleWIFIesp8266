@@ -37,27 +37,33 @@ class ClassWSServer {
         });
         this.server.on('request', req => {
             const connection = req.accept('', req.origin);
+            connection.key = req.headers['sec-websocket-key']; //#### 
             this.clients.push(connection);        
             
             console.log('Connected ' + connection.remoteAdress);
             connection.on('message', message => {
                 const dataName = message.type + 'Data';
                 const data = message[dataName];
-                let type = this.proxy.defType();
-                console.log('Recieved: ' + data);
-                // TODO: организовать отправку пакета прокси как клиенту сервера
-                // Организовать рассылку сообщений клиентам (только нужному типу (или нескольким?) и не самому себе)
-                this.clients.forEach(client => {
-                    if (connection !== client) {
-                        client.send(data);
-                    }
-                });
+
+                this.proxyWS.Receive(data, connection.key); //####
             });
             connection.on('close', (rCode, desc) => {
                 let index = this.clients.indexOf(connection);
                 this.clients.splice(index,1);
                 console.log('Disconnected ' + connection.remoteAddress);
             });
+        });
+    }
+    /**
+     * @method
+     * Вызовом этого метода WSS получает данные и список ключей, по которому определяюся клиенты, 
+     * коим необходимо отправить данные. 
+     * @param {String} data 
+     * @param {[String]} keys 
+     */
+    Receive(data, keys) {
+        this.clients.filter(client => keys.includes(client.key)).forEach(client => {
+            client.send(data);
         });
     }
      /**
