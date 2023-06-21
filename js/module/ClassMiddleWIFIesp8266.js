@@ -84,8 +84,6 @@ class ClassEsp8266WiFi {
                         let wrt = require("Storage").readJSON("APs.json", true);
                         let i = 0;
                         let j = 0;
-                        console.log (found);
-                        console.log (wrt);
                         
                         for (i; i < wrt.length; i++) {
                             for (j; j < found.length; j++) {
@@ -93,6 +91,9 @@ class ClassEsp8266WiFi {
                                     this.ssid = wrt[i].ssid;
                                     this.pass = wrt[i].pass;
                                     break;
+                                }
+                                else {
+                                    console.log (found[j] + " " + wrt[i].ssid);
                                 }
                             }
                         }
