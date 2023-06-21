@@ -70,7 +70,7 @@ class ClassEsp8266WiFi {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         let wifi;
         Serial3.setup(115200);
-        if (true) {
+        if (false) {
             wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
@@ -100,32 +100,14 @@ class ClassEsp8266WiFi {
             })
         }
         else {
-            wifi = require("wifi").setup(function (err) {
-                if (err) {
-                    console.log('Module connection error! ' + err)
-                }
-                wifi.getAPs(function(err, aps) {
-                    if (err) {
-                        console.log('Error looking for APs: ' + err)
-                    }
-                    else {
-                        let found = aps.map(a => a.ssid);
-                        let wrt = require("Storage").readJSON("APs.json", true);
-                        let i = 0;
-                        let j = 0;
-                        
-                        for (i; i < wrt.length; i++) {
-                            for (j; j < found.length; j++) {
-                                if (found[j] == wrt[i].ssid) {
-                                    this.ssid = wrt[i].ssid;
-                                    this.pass = wrt[i].pass;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                });
-            })
+            wifi = require("Wifi");
+            wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
+            if (err) {
+                console.log("Connection error: "+err);
+                return;
+            }
+            console.log("Connected!");
+            });
         }
     }
     /**
