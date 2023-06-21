@@ -82,16 +82,12 @@ class ClassEsp8266WiFi {
                     else {
                         let found = aps.map(a => a.ssid);
                         let wrt = require("Storage").readJSON("APs.json", true);
-                        let i = 0;
-                        let j = 0;
-                        console.log (wrt.length);
 
                         found.forEach(fName => {
                             wrt.forEach(sName => {
                                 if (fName == sName.ssid) {
                                     this.ssid = sName.ssid;
                                     this.pass = sName.pass;
-                                    console.log (this.ssid + " " + this.pass);
                                     return;
                                 }
                                
@@ -145,16 +141,16 @@ class ClassEsp8266WiFi {
                     console.log(this.ssid + " " +  this.pass + '\nConnection failed! ' + err);
                 }
                 else {
-                    console.log('Connected!');
+                    console.log('Connected to ' + this.ssid);
                     // Бип! - добавить метод на писк бипера
                     wifi.getIP(function (emsg, ipAdress) {
                         if (emsg) {
                             throw new err (emsg, this.ecode);
                         }
-                        console.log(ipAdress);
+                        console.log("IP: " + ipAdress);
                     });
-                    this.wifi = wifi;
-                    this.AddToList();
+                    //this.wifi = wifi;
+                    //this.AddToList();
                 }
             })            
         });
