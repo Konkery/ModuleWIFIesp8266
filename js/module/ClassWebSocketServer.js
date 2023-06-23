@@ -34,13 +34,13 @@ class ClassWSServer {
         page += '},1000);</script></body></html>';
 
         function onPageRequest(req, res) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(page);
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.end(page);
         }
         console.log("Wubbalubba");
-        var server = require('ws').createServer(onPageRequest);
-        server.listen(8000);
-        server.on("websocket", function(ws) {
+        this.server = require('ws').createServer(onPageRequest);
+        this.server.listen(8000);
+        this.server.on("websocket", function(ws) {
             ws.on('message',function(msg) { print("[WS] "+JSON.stringify(msg)); });
             ws.send("Hello from Espruino!");
         });
