@@ -70,7 +70,7 @@ class ClassEsp8266WiFi {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         let wifi;
         Serial3.setup(115200);
-        if (false) {
+        if (true) {
             wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
@@ -93,8 +93,8 @@ class ClassEsp8266WiFi {
                                 }                               
                             });
                         });
-                        this.ssid = 'Gorizont-Zero';
-                        this.pass = 'gorizont#zero';
+                        //this.ssid = 'Gorizont-Zero';
+                        //this.pass = 'gorizont#zero';
                     }
                 });
             })
