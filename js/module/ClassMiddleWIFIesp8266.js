@@ -69,7 +69,7 @@ class ClassEsp8266WiFi {
     ScanForAPs() {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         let wifi;
-        Serial3.setup(115200);
+        //Serial3.setup(115200);
         if (false) {
             wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
@@ -106,7 +106,7 @@ class ClassEsp8266WiFi {
                 console.log("Connection error: "+err);
                 return;
             }
-            console.log("Connected!");
+            console.log("Connected to "+info.ip);
             });
         }
     }
