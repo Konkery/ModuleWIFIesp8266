@@ -35,7 +35,7 @@ class ClassWSServer {
         }
 
         function wsHandler(ws) {
-            ws.on('open', () => {
+            ws.on('handshake', () => {
                 console.log('Connected '+ ws.key.hashed);
                 this.clients.push(ws);
                 console.log(ws);
