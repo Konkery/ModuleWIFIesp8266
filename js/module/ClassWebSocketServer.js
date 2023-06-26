@@ -35,11 +35,9 @@ class ClassWSServer {
         }
 
         function wsHandler(ws) {
-            ws.on('handshake', () => {
-                console.log('Connected '+ ws.key.hashed);
-                this.clients.push(ws);
-                console.log(ws);
-              });
+            console.log('Connected '+ ws.key.hashed);
+            this.clients.push(ws);
+            console.log(ws);
             ws.on('message', (message) => {
                 //const dataName = message.type + 'Data';
                 //const data = message[dataName];
