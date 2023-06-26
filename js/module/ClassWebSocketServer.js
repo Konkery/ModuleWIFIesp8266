@@ -64,7 +64,9 @@ class ClassWSServer {
      */
     Notify(data, keys) {
         this.clients.filter(client => keys.includes(client.key.hashed)).forEach(client => {
+            console.log("Send: " + data);
             client.send(data);
+            console.log("To " + keys);
         });
     }
      /**
