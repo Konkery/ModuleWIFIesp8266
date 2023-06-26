@@ -41,15 +41,15 @@ class ClassWSServer {
                 console.log(ws);
               });
             ws.on('message', (message) => {
-                const dataName = message.type + 'Data';
-                const data = message[dataName];
-                console.log('Receiving message');
-                this.proxy.Receive(data, ws.key.hashed);
+                //const dataName = message.type + 'Data';
+                //const data = message[dataName];
+                console.log('Receiving message '+ message);
+                //this.proxy.Receive(data, ws.key.hashed);
             });
             ws.on('close', () => {
                 let index = this.clients.indexOf(ws);
                 this.clients.splice(index,1);
-                this.proxy.RemoveSub(ws.key.hashed);
+                //this.proxy.RemoveSub(ws.key.hashed);
                 console.log('Disconnected ' + ws.key.hashed);
                 console.log('Closed');
             });
