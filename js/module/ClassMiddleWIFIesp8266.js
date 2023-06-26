@@ -93,8 +93,8 @@ class ClassEsp8266WiFi {
                                 }                               
                             });
                         });
-                        //this.ssid = 'Gorizont-Zero';
-                        //this.pass = 'gorizont#zero';
+                        this.ssid = 'Gorizont-Zero';
+                        this.pass = 'gorizont#zero';
                     }
                 });
             })
