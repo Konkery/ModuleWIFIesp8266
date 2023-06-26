@@ -19,7 +19,6 @@ class ClassWSServer {
         this.server = undefined;
         this.proxy = new ProxyWS(this);
         this.port = 8080;
-        this.clients = [];
         this.Init();
 	}
     /**
@@ -29,8 +28,6 @@ class ClassWSServer {
     Init() {
         let page = '<html><body>404 - Not supported format</body></html>';
 
-        let cl = [];
-
         function pageHandler (req, res) {
             res.writeHead(404, {'Content-Type': 'text/html'});
             res.end(page);
@@ -38,8 +35,6 @@ class ClassWSServer {
 
         function wsHandler(ws) {
             console.log('Connection established!\nKey: '+ ws.key.hashed);
-            cl.push(ws);
-            this.clients = cl;
             console.log(ws);
             ws.on('message', (message) => {
                 //const dataName = message.type + 'Data';
@@ -48,8 +43,8 @@ class ClassWSServer {
                 //this.proxy.Receive(data, ws.key.hashed);
             });
             ws.on('close', () => {
-                let index = this.clients.indexOf(ws);
-                this.clients.splice(index,1);
+                let index = this.server.clients.indexOf(ws);
+                this.server.clients.splice(index,1);
                 //this.proxy.RemoveSub(ws.key.hashed);
                 console.log('Disconnected ' + ws.key.hashed);
                 console.log('Closed');
