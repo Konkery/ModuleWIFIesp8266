@@ -49,7 +49,7 @@ class ClassWSServer {
         this.server = require('ws').createServer(pageHandler);
         this.server.listen(8080);
         console.log('Starting server');
-        s.on('websocket', wsHandler);
+        this.server.on('websocket', wsHandler);
         /*this.server = require('ws').createServer((req, res) => {
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.end('');

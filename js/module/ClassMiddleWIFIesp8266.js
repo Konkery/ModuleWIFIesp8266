@@ -121,7 +121,7 @@ class ClassEsp8266WiFi {
      * существующей WiFi-сети
      */
     Connect() {
-        let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
+        /*let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
             if (err) {
                 console.log('Module connection error! ' + err);
             }
@@ -142,7 +142,7 @@ class ClassEsp8266WiFi {
                     //this.AddToList();
                 }
             })            
-        });
+        });*/
        
     }
     /**
