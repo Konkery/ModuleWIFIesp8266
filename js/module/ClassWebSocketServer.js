@@ -29,54 +29,36 @@ class ClassWSServer {
     Init() {
         let page = '<html><body>404 - Not supported format</body></html>';
 
-
         function pageHandler (req, res) {
-            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.writeHead(404, {'Content-Type': 'text/html'});
             res.end(page);
         }
 
         function wsHandler(ws) {
-            ws.on('message', () => {
-              console.log('Contact');
-              console.log(ws);
+            ws.on('open', () => {
+                console.log('Connected '+ ws.key.hashed);
+                this.clients.push(ws);
+                console.log(ws);
+              });
+            ws.on('message', (message) => {
+                const dataName = message.type + 'Data';
+                const data = message[dataName];
+                console.log('Receiving message');
+                this.proxy.Receive(data, ws.key.hashed);
             });
             ws.on('close', () => {
-              console.log('Closed');
+                let index = this.clients.indexOf(ws);
+                this.clients.splice(index,1);
+                this.proxy.RemoveSub(ws.key.hashed);
+                console.log('Disconnected ' + ws.key.hashed);
+                console.log('Closed');
             });
         }
 
-        console.log("Wubbalubba2");        
         this.server = require('ws').createServer(pageHandler);
         this.server.listen(8080);
         console.log('Starting server');
         this.server.on('websocket', wsHandler);
-        /*this.server = require('ws').createServer((req, res) => {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end('');
-        });
-        //if (this.port == undefined) this.port = 8000;
-        this.server.listen(this.port);
-        console.log('Listen to ' + this.port);
-        this.server.on("websocket", req => {
-            console.log(req);
-            const connection = req.accept('', req.origin);
-            connection.key = req.headers['sec-websocket-key']; //#### 
-            this.clients.push(connection);        
-            
-            console.log('Connected ' + connection.remoteAdress);
-            connection.on('message', message => {
-                const dataName = message.type + 'Data';
-                const data = message[dataName];
-
-                this.proxy.Receive(data, connection.key); //####
-            });
-            connection.on('close', (rCode, desc) => {
-                let index = this.clients.indexOf(connection);
-                this.clients.splice(index,1);
-                this.proxy.RemoveSub(connection.key);
-                console.log('Disconnected ' + connection.remoteAddress);
-            });
-        });*/
     }
     /**
      * @method
@@ -86,7 +68,7 @@ class ClassWSServer {
      * @param {[String]} keys 
      */
     Notify(data, keys) {
-        this.clients.filter(client => keys.includes(client.key)).forEach(client => {
+        this.clients.filter(client => keys.includes(client.key.hashed)).forEach(client => {
             client.send(data);
         });
     }
