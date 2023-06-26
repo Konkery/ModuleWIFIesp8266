@@ -101,7 +101,7 @@ class ClassEsp8266WiFi {
         }
         else {
             wifi = require("Wifi");
-            wifi.connect('qwerty2', { password : "goligrovgoligrov" }, function(err) {
+            wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
             if (err) {
                 console.log("Connection error: "+err);
                 return;
