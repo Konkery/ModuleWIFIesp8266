@@ -39,14 +39,12 @@ class ClassWSServer {
         function wsHandler(ws) {
             console.log('Connection established!\nKey: '+ ws.key.hashed);
             this.clients.push(ws);
-            // this.clients = clients.push(ws);
             console.log(ws);
-            // this.clients = clients;
             ws.on('message', message => {
                 //const dataName = message.type + 'Data';
                 //const data = message[dataName];
                 console.log('Receiving message '+ message);
-                //this.proxy.Receive(message, ws.key.hashed);
+                this.proxy.Receive(message, ws.key.hashed);
             });
             ws.on('close', () => {
                 let index = this.clients.indexOf(ws);
@@ -70,7 +68,7 @@ class ClassWSServer {
      * @param {[String]} keys 
      */
     Notify(data, keys) {
-        this.server.clients.filter(client => keys.includes(client.key.hashed)).forEach(client => {
+        this.clients.filter(client => keys.includes(client.key.hashed)).forEach(client => {
             client.send(data);
         });
     }
