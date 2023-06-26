@@ -44,7 +44,7 @@ class ClassWSServer {
                 //const dataName = message.type + 'Data';
                 //const data = message[dataName];
                 console.log('Receiving message '+ message);
-                this.proxy.Receive(message, ws.key.hashed);
+                //this.proxy.Receive(message, ws.key.hashed);
             });
             ws.on('close', () => {
                 let index = this.clients.indexOf(ws);
