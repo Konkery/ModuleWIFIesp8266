@@ -29,8 +29,6 @@ class ClassWSServer {
     Init() {
         let page = '<html><body>404 - Not supported format</body></html>';
 
-        // let clients = [];
-
         function pageHandler (req, res) {
             res.writeHead(404, {'Content-Type': 'text/html'});
             res.end(page);
@@ -41,17 +39,14 @@ class ClassWSServer {
             this.clients.push(ws);
             console.log(ws);
             ws.on('message', message => {
-                //const dataName = message.type + 'Data';
-                //const data = message[dataName];
-                console.log('Receiving message '+ message);
+                console.log('Receiving message: '+ message);
                 this.proxy.Receive(message, ws.key.hashed);
             });
             ws.on('close', () => {
                 let index = this.clients.indexOf(ws);
                 this.clients.splice(index,1);
-                //this.proxy.RemoveSub(ws.key.hashed);
-                console.log('Disconnected ' + ws.key.hashed);
-                console.log('Closed');
+                this.proxy.RemoveSub(ws.key.hashed);
+                console.log('Closed ' + ws.key.hashed);
             });
         }
 
