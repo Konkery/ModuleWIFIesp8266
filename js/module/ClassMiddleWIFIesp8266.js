@@ -106,8 +106,13 @@ class ClassEsp8266WiFi {
                 console.log("Connection error: "+err);
                 return;
             }
-            console.log("Connected to "+info.ip);
+            wifi.getIP((err, info) => {
+                if (err !== null) {
+                  throw err;
+                }
+                console.log("Connected to "+info.ip);            
             });
+        });
         }
     }
     /**
