@@ -29,6 +29,8 @@ class ClassWSServer {
     Init() {
         let page = '<html><body>404 - Not supported format</body></html>';
 
+        let cl = [];
+
         function pageHandler (req, res) {
             res.writeHead(404, {'Content-Type': 'text/html'});
             res.end(page);
@@ -36,7 +38,8 @@ class ClassWSServer {
 
         function wsHandler(ws) {
             console.log('Connection established!\nKey: '+ ws.key.hashed);
-            this.clients.push(ws);
+            cl.push(ws);
+            this.clients = cl;
             console.log(ws);
             ws.on('message', (message) => {
                 //const dataName = message.type + 'Data';
