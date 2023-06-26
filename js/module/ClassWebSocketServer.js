@@ -44,7 +44,7 @@ class ClassWSServer {
                 //const dataName = message.type + 'Data';
                 //const data = message[dataName];
                 console.log('Receiving message '+ message);
-                //this.proxy.Receive(data, ws.key.hashed);
+                this.proxy.Receive(message, ws.key.hashed);
             });
             ws.on('close', () => {
                 let index = this.clients.indexOf(ws);
@@ -68,7 +68,7 @@ class ClassWSServer {
      * @param {[String]} keys 
      */
     Notify(data, keys) {
-        this.clients.filter(client => keys.includes(client.key.hashed)).forEach(client => {
+        this.server.clients.filter(client => keys.includes(client.key.hashed)).forEach(client => {
             client.send(data);
         });
     }
