@@ -40,7 +40,7 @@ class ClassWSServer {
             clients.push(ws);
             console.log(ws);
             this.clients = clients;
-            ws.on('message', (message) => {
+            ws.on('message', message => {
                 //const dataName = message.type + 'Data';
                 //const data = message[dataName];
                 console.log('Receiving message '+ message);
