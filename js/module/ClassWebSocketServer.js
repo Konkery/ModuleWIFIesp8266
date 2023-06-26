@@ -39,6 +39,7 @@ class ClassWSServer {
             console.log('Connection established!\nKey: '+ ws.key.hashed);
             clients.push(ws);
             console.log(ws);
+            this.clients = clients;
             ws.on('message', (message) => {
                 //const dataName = message.type + 'Data';
                 //const data = message[dataName];
@@ -46,8 +47,8 @@ class ClassWSServer {
                 //this.proxy.Receive(data, ws.key.hashed);
             });
             ws.on('close', () => {
-                let index = this.server.clients.indexOf(ws);
-                this.server.clients.splice(index,1);
+                let index = this.clients.indexOf(ws);
+                this.clients.splice(index,1);
                 //this.proxy.RemoveSub(ws.key.hashed);
                 console.log('Disconnected ' + ws.key.hashed);
                 console.log('Closed');
