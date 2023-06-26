@@ -35,7 +35,7 @@ class ClassWSServer {
         }
 
         function wsHandler(ws) {
-            console.log('Connected '+ ws.key.hashed);
+            console.log('Connection established!\nKey: '+ ws.key.hashed);
             this.clients.push(ws);
             console.log(ws);
             ws.on('message', (message) => {
