@@ -18,7 +18,7 @@ class ClassWSServer {
         this.name = 'ClassWSServer'; //переопределяем имя типа
         this.server = undefined;
         this.proxy = new ProxyWS(this);
-        this.port = 8000;
+        this.port = 8080;
         this.clients = [];
         this.Init();
 	}
@@ -27,23 +27,29 @@ class ClassWSServer {
      * Метод создания вебсокет-сервера
      */
     Init() {
-        var page = '<html><body><script>var ws;setTimeout(function(){';
-        page += 'ws = new WebSocket("ws://" + location.host + "/my_websocket", "protocolOne");';
-        page += 'ws.onmessage = function (event) { console.log("MSG:"+event.data); };';
-        page += 'setTimeout(function() { ws.send("Hello to Espruino!"); }, 1000);';
-        page += '},1000);</script></body></html>';
+        let page = '<html><body>404 - Not supported format</body></html>';
 
-        function onPageRequest(req, res) {
+
+        function pageHandler (req, res) {
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.end(page);
         }
-        console.log("Wubbalubba");
-        this.server = require('ws').createServer(onPageRequest);
-        this.server.listen(8000);
-        this.server.on("websocket", function(ws) {
-            ws.on('message',function(msg) { print("[WS] "+JSON.stringify(msg)); });
-            ws.send("Hello from Espruino!");
-        });
+
+        function wsHandler(ws) {
+            ws.on('message', () => {
+              console.log('Contact');
+              console.log(ws);
+            });
+            ws.on('close', () => {
+              console.log('Closed');
+            });
+        }
+
+        console.log("Wubbalubba2");        
+        this.server = require('ws').createServer(pageHandler);
+        this.server.listen(8080);
+        console.log('Starting server');
+        s.on('websocket', wsHandler);
         /*this.server = require('ws').createServer((req, res) => {
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.end('');
