@@ -69,8 +69,8 @@ class ClassEsp8266WiFi {
     ScanForAPs() {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         let wifi;
-        //Serial3.setup(115200);
-        if (false) {
+        if (process.env.BOARD === "ISKRAJS") {
+            Serial3.setup(115200);
             wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
@@ -121,29 +121,30 @@ class ClassEsp8266WiFi {
      * существующей WiFi-сети
      */
     Connect() {
-        /*let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
-            if (err) {
-                console.log('Module connection error! ' + err);
-            }
-            wifi.connect (this.ssid, this.pass, function (err) {
+        if (process.env.BOARD === "ISKRAJS") {
+            let wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
-                    console.log(this.ssid + " " +  this.pass + '\nConnection failed! ' + err);
+                    console.log('Module connection error! ' + err);
                 }
-                else {
-                    console.log('Connected to ' + this.ssid);
-                    // Бип! - добавить метод на писк бипера
-                    wifi.getIP(function (emsg, ipAdress) {
-                        if (emsg) {
-                            throw new err (emsg, this.ecode);
-                        }
-                        console.log("IP: " + ipAdress);
-                    });
-                    //this.wifi = wifi;
-                    //this.AddToList();
-                }
-            })            
-        });*/
-       
+                wifi.connect (this.ssid, this.pass, function (err) {
+                    if (err) {
+                        console.log(this.ssid + " " +  this.pass + '\nConnection failed! ' + err);
+                    }
+                    else {
+                        console.log('Connected to ' + this.ssid);
+                        // Бип! - добавить метод на писк бипера
+                        wifi.getIP(function (emsg, ipAdress) {
+                            if (emsg) {
+                                throw new err (emsg, this.ecode);
+                            }
+                            console.log("IP: " + ipAdress);
+                        });
+                        //this.wifi = wifi;
+                        //this.AddToList();
+                    }
+                })            
+            });
+        }
     }
     /**
      * @method
