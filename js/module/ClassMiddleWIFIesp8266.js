@@ -71,11 +71,11 @@ class ClassEsp8266WiFi {
         let Wifi;
         if (process.env.BOARD === "ISKRAJS") {
             Serial3.setup(115200);
-            Wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
+            this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
                 }
-                Wifi.getAPs(function(err, aps) {
+                this.getAPs(function(err, aps) {
                     if (err) {
                         console.log('Error looking for APs: ' + err)
                     }
@@ -95,13 +95,13 @@ class ClassEsp8266WiFi {
                         });
                         this.ssid = 'Gorizont-Zero';
                         this.pass = 'gorizont#zero';
-                        Wifi.connect (this.ssid, this.pass, function (err) {
+                        this.connect (this.ssid, this.pass, function (err) {
                             if (err) {
                                 console.log(this.ssid + '\nConnection failed! ' + err);
                             }
                             else {
                                 // Бип! - добавить метод на писк бипера
-                                Wifi.getIP(function (emsg, ipAdress) {
+                                this.getIP(function (emsg, ipAdress) {
                                     if (emsg) {
                                         throw new err (emsg, this.ecode);
                                     }
