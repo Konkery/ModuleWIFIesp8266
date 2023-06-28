@@ -47,8 +47,8 @@ class ClassEsp8266WiFi {
         this.ssid = undefined;
         this.pass = undefined;
         //this.InitBus(_rx, _tx);
-        this.ScanForAPs();
-        this.Connect();
+        this.ScanForAPs().bind(this);
+        //this.Connect();
 	}
     /**
      * @method
@@ -64,18 +64,17 @@ class ClassEsp8266WiFi {
     /**
      * @method
      * Сканирует окружение на наличие точек доступа и выбирает
-     * из знакомых к какой подключится
+     * из знакомых к какой подключится, и осуществляет подключение
      */
     ScanForAPs() {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
-        let wifi;
         if (process.env.BOARD === "ISKRAJS") {
             Serial3.setup(9600);
-            wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
+            this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
                 }
-                wifi.getAPs(function(err, aps) {
+                this.wifi.getAPs(function(err, aps) {
                     if (err) {
                         console.log('Error looking for APs: ' + err)
                     }
@@ -97,22 +96,42 @@ class ClassEsp8266WiFi {
                         this.pass = 'gorizont#zero';
                     }
                 });
+                this.wifi.connect (this.ssid, this.pass, function (err) {
+                    if (err) {
+                        console.log(this.ssid + '\nConnection failed! ' + err);
+                    }
+                    else {
+                        // Бип! - добавить метод на писк бипера
+                        wifi.getIP(function (emsg, ipAdress) {
+                            if (emsg) {
+                                throw new err (emsg, this.ecode);
+                            }
+                            console.log("IP: " + ipAdress);
+                        });
+                        //this.AddToList();
+                    }
+                });
             })
         }
         else {
-            wifi = require("Wifi");
-            wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
+            this.wifi = require("Wifi");
+            /*this.wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
             if (err) {
                 console.log("Connection error: "+err);
                 return;
-            }
-            wifi.getIP((err, info) => {
+            }*/
+            this.wifi.scan((err, ap_list) => {
+                if (err !== null) {
+                    throw err;
+                  }
+            });
+            this.wifi.getIP((err, info) => {
                 if (err !== null) {
                   throw err;
                 }
-                console.log("Connected to "+info.ip);            
+                console.log("IP: "+info.ip);            
             });
-        });
+        //});
         }
     }
     /**
