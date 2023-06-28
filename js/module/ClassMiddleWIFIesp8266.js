@@ -95,23 +95,23 @@ class ClassEsp8266WiFi {
                         });
                         this.ssid = 'Gorizont-Zero';
                         this.pass = 'gorizont#zero';
-                    }
-                });
-                this.wifi.connect (this.ssid, this.pass, function (err) {
-                    if (err) {
-                        console.log(this.ssid + '\nConnection failed! ' + err);
-                    }
-                    else {
-                        // Бип! - добавить метод на писк бипера
-                        this.wifi.getIP(function (emsg, ipAdress) {
-                            if (emsg) {
-                                throw new err (emsg, this.ecode);
+                        this.wifi.connect (this.ssid, this.pass, function (err) {
+                            if (err) {
+                                console.log(this.ssid + '\nConnection failed! ' + err);
                             }
-                            console.log("IP: " + ipAdress);
+                            else {
+                                // Бип! - добавить метод на писк бипера
+                                this.wifi.getIP(function (emsg, ipAdress) {
+                                    if (emsg) {
+                                        throw new err (emsg, this.ecode);
+                                    }
+                                    console.log("IP: " + ipAdress);
+                                });
+                                //this.AddToList();
+                            }
                         });
-                        //this.AddToList();
                     }
-                });
+                });                
             })
         }
         else {
