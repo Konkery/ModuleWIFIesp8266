@@ -43,7 +43,7 @@ class ClassEsp8266WiFi {
         }
 
         this.name = 'ClassEsp8266WiFi'; //переопределяем имя типа
-        this.wifi = undefined;
+        this._wifi = undefined;
         this.ssid = undefined;
         this.pass = undefined;
         //this.InitBus(_rx, _tx);
@@ -71,12 +71,12 @@ class ClassEsp8266WiFi {
         let Wifi;
         if (process.env.BOARD === "ISKRAJS") {
             Serial3.setup(115200);
-            this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
-                console.log(this.wifi);
+            this._wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
+                console.log(this._wifi);
                 if (err) {
                     console.log('Module connection error! ' + err)
                 }
-                this.wifi.getAPs(function(err, aps) {
+                this._wifi.getAPs(function(err, aps) {
                     if (err) {
                         console.log('Error looking for APs: ' + err)
                     }
@@ -102,7 +102,7 @@ class ClassEsp8266WiFi {
                             }
                             else {
                                 // Бип! - добавить метод на писк бипера
-                                this.getIP(function (emsg, ipAdress) {
+                                this._wifi.getIP(function (emsg, ipAdress) {
                                     if (emsg) {
                                         throw new err (emsg, this.ecode);
                                     }
@@ -116,14 +116,14 @@ class ClassEsp8266WiFi {
             });
         }
         else {
-            this.wifi = require("Wifi");
+            this._wifi = require("Wifi");
             console.log("Hello345");
-            this.wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
+            this._wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
                 if (err) {
                     console.log("Connection error: "+err);
                     return;
                 }
-                this.wifi.getIP((err, info) => {
+                this._wifi.getIP((err, info) => {
                     if (err) {
                       throw err;
                     }
