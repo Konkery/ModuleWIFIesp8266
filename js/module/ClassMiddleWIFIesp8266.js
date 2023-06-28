@@ -113,7 +113,7 @@ class ClassEsp8266WiFi {
                         });
                     }
                 });                
-            }).bind(this);
+            });
         }
         else {
             this.wifi = require("Wifi");
