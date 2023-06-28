@@ -70,7 +70,7 @@ class ClassEsp8266WiFi {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         let Wifi;
         if (process.env.BOARD === "ISKRAJS") {
-            Serial3.setup(9600);
+            Serial3.setup(115200);
             this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
                 if (err) {
                     console.log('Module connection error! ' + err)
@@ -103,7 +103,7 @@ class ClassEsp8266WiFi {
                     }
                     else {
                         // Бип! - добавить метод на писк бипера
-                        wifi.getIP(function (emsg, ipAdress) {
+                        this.wifi.getIP(function (emsg, ipAdress) {
                             if (emsg) {
                                 throw new err (emsg, this.ecode);
                             }
