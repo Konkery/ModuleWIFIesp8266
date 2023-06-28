@@ -47,7 +47,7 @@ class ClassEsp8266WiFi {
         this.ssid = undefined;
         this.pass = undefined;
         //this.InitBus(_rx, _tx);
-        this.ScanForAPs();
+        this.ScanForAPs.bind(this);
         //this.Connect();
 	}
     /**
