@@ -46,8 +46,8 @@ class ClassEsp8266WiFi {
         this._wifi = undefined;
         this.ssid = undefined;
         this.pass = undefined;
-        this.bus = undefined;
-        this.InitBus(_rx, _tx);
+        //this.bus = undefined;
+        //this.InitBus(_rx, _tx);
         this.ScanForAPs();
         //this.Connect();
 	}
@@ -72,7 +72,8 @@ class ClassEsp8266WiFi {
     ScanForAPs() {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
         if (process.env.BOARD === "ISKRAJS") {
-            this._wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, (err) => {
+            Serial3.setup(115200);
+            this._wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, (err) => {
                 if (err) {
                     throw err;
                 }
