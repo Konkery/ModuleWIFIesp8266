@@ -118,7 +118,7 @@ class ClassEsp8266WiFi {
         else {
             this._wifi = require("Wifi");
             console.log("Hello345");
-            this._wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
+            this._wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, (err) => {
                 if (err) {
                     console.log("Connection error: "+err);
                     return;
