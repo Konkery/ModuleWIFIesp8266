@@ -122,6 +122,12 @@ class ClassEsp8266WiFi {
                     console.log("Connection error: "+err);
                     return;
                 }
+                this.wifi.getIP((err, info) => {
+                    if (err) {
+                      throw err;
+                    }
+                    console.log("IP: "+info.ip);            
+                });
             });
            /* this.wifi.scan((err, ap_list) => {
                 if (err) {
@@ -129,13 +135,7 @@ class ClassEsp8266WiFi {
                     throw err;
                   }
                   console.log(ap_list);
-            });*/
-            this.wifi.getIP((err, info) => {
-                if (err) {
-                  throw err;
-                }
-                console.log("IP: "+info.ip);            
-            });
+            });*/            
         }
     }
     /**
