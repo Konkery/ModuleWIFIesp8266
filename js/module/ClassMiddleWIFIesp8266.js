@@ -46,7 +46,8 @@ class ClassEsp8266WiFi {
         this._wifi = undefined;
         this.ssid = undefined;
         this.pass = undefined;
-        //this.InitBus(_rx, _tx);
+        this.bus = undefined;
+        this.InitBus(_rx, _tx);
         this.ScanForAPs();
         //this.Connect();
 	}
@@ -57,9 +58,11 @@ class ClassEsp8266WiFi {
      * @param {Object} _tx      - порт tx шины UART, обязательное поле
      */
     InitBus(_rx, _tx) {
-        let bus_class = new UARTBus();
-        let opt = {rx: _rx, tx: _tx, baud: 115200};
-        this.bus = bus_class.AddBus(opt);
+        if (_rx && _tx) {
+            let bus_class = new UARTBus();
+            let opt = {rx: _rx, tx: _tx, baud: 115200};
+            this.bus = bus_class.AddBus(opt);
+        }
     }
     /**
      * @method
@@ -68,28 +71,25 @@ class ClassEsp8266WiFi {
      */
     ScanForAPs() {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
-        let Wifi;
         if (process.env.BOARD === "ISKRAJS") {
-            Serial3.setup(115200);
-            this._wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, (err) => {
+            this._wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this.bus, (err) => {
                 if (err) {
-                    console.log('Module connection error! ' + err)
+                    throw err;
                 }
                 this._wifi.getAPs((err, aps) => {
                     if (err) {
-                        console.log('Error looking for APs: ' + err)
+                        throw err;
                     }
                     else {
                         let found = aps.map(a => a.ssid);
                         let wrt = require("Storage").readJSON("APs.json", true);
-                        console.log (found);
+                        //console.log (found);
 
                         found.forEach(fName => {
                             wrt.forEach(sName => {
                                 if (fName == sName.ssid) {
                                     this.ssid = sName.ssid;
                                     this.pass = sName.pass;
-                                    return;
                                 }                               
                             });
                         });
@@ -98,12 +98,13 @@ class ClassEsp8266WiFi {
                         this._wifi.connect (this.ssid, this.pass, (err) => {
                             if (err) {
                                 console.log(this.ssid + '\nConnection failed! ' + err);
+                                throw err;
                             }
                             else {
                                 // Бип! - добавить метод на писк бипера
                                 this._wifi.getIP((emsg, ipAdress) => {
                                     if (emsg) {
-                                        throw new err (emsg, this.ecode);
+                                        throw err;
                                     }
                                     console.log("IP: " + ipAdress);
                                 });
