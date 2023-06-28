@@ -75,7 +75,7 @@ class ClassEsp8266WiFi {
                 if (err) {
                     console.log('Module connection error! ' + err)
                 }
-                this.getAPs(function(err, aps) {
+                this.wifi.getAPs(function(err, aps) {
                     if (err) {
                         console.log('Error looking for APs: ' + err)
                     }
@@ -112,7 +112,7 @@ class ClassEsp8266WiFi {
                         });
                     }
                 });                
-            })
+            }).bind(this);
         }
         else {
             this.wifi = require("Wifi");
