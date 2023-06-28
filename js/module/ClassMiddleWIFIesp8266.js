@@ -72,7 +72,7 @@ class ClassEsp8266WiFi {
         if (process.env.BOARD === "ISKRAJS") {
             Serial3.setup(115200);
             this._wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
-                console.log(this.wifi._wifi);
+                console.log("Printing this: " + this);
                 if (err) {
                     console.log('Module connection error! ' + err)
                 }
