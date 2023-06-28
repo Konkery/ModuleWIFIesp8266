@@ -116,25 +116,26 @@ class ClassEsp8266WiFi {
         }
         else {
             this.wifi = require("Wifi");
-            console.log("Hello123");
-            /*this.wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
-            if (err) {
-                console.log("Connection error: "+err);
-                return;
-            }*/
-            this.wifi.scan((err, ap_list) => {
+            console.log("Hello345");
+            this.wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
+                if (err) {
+                    console.log("Connection error: "+err);
+                    return;
+                }
+            });
+           /* this.wifi.scan((err, ap_list) => {
                 if (err) {
                     console.log("Connection error: "+err);
                     throw err;
                   }
                   console.log(ap_list);
-            });
-            /*this.wifi.getIP((err, info) => {
+            });*/
+            this.wifi.getIP((err, info) => {
                 if (err) {
                   throw err;
                 }
                 console.log("IP: "+info.ip);            
-            });*/
+            });
         }
     }
     /**
