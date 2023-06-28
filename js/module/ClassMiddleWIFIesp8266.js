@@ -68,6 +68,7 @@ class ClassEsp8266WiFi {
      */
     ScanForAPs() {
         // функции те-жеб реквайр другой - как определить модуль, на котором мы работаем?
+        let Wifi;
         if (process.env.BOARD === "ISKRAJS") {
             Serial3.setup(9600);
             this.wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(Serial3, function (err) {
@@ -114,19 +115,19 @@ class ClassEsp8266WiFi {
             })
         }
         else {
-            this.wifi = require("Wifi");
+            Wifi = require("Wifi");
             /*this.wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
             if (err) {
                 console.log("Connection error: "+err);
                 return;
             }*/
-            this.wifi.scan((err, ap_list) => {
+            Wifi.scan((err, ap_list) => {
                 if (err !== null) {
                     throw err;
                   }
                   console.log(ap_list);
             });
-            this.wifi.getIP((err, info) => {
+            Wifi.getIP((err, info) => {
                 if (err !== null) {
                   throw err;
                 }
