@@ -47,7 +47,7 @@ class ClassEsp8266WiFi {
         this.ssid = undefined;
         this.pass = undefined;
         //this.InitBus(_rx, _tx);
-        this.ScanForAPs.bind(this);
+        this.ScanForAPs();
         //this.Connect();
 	}
     /**
@@ -115,20 +115,20 @@ class ClassEsp8266WiFi {
             })
         }
         else {
-            Wifi = require("Wifi");
+            this.wifi = require("Wifi");
             console.log("Hello blyat!");
             /*this.wifi.connect('Gorizont-Zero', { password : "gorizont#zero" }, function(err) {
             if (err) {
                 console.log("Connection error: "+err);
                 return;
             }*/
-            Wifi.scan((err, ap_list) => {
+            this.wifi.scan((err, ap_list) => {
                 if (err !== null) {
                     throw err;
                   }
                   console.log(ap_list);
             });
-            Wifi.getIP((err, info) => {
+            this.wifi.getIP((err, info) => {
                 if (err !== null) {
                   throw err;
                 }
