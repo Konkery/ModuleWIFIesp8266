@@ -2,8 +2,7 @@
  * @class
  * Класс ClassEsp8266 реализует логику работы WiFi-модуля на чипе Esp8266.
  * Для работы класса требуется подключить модуль ModuleAppMath, где 
- * добавляется функция проверки на целочисленность, а так-же базовый класс,
- * разработанный Amperka
+ * добавляется функция проверки на целочисленность, а так-же базовый класс.
  * 
  * Тип для возвращения списка подключенных устройств
  * @typedef  {Object} ObjectDevice     - тип контейнер хранящий подключенные устройства
@@ -57,9 +56,8 @@ class ClassEsp8266WiFi {
      */
     InitBus(_rx, _tx) {
         if (_rx && _tx) {
-            let bus_class = new UARTBus();
             let opt = {rx: _rx, tx: _tx, baud: 115200};
-            this._bus = bus_class.AddBus(opt);
+            this._bus = UARTbus.AddBus(opt);
         }
     }
     /**
