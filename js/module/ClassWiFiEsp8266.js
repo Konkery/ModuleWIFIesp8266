@@ -27,7 +27,7 @@
  * 
  * Методы аутентификации следующие: open, wep, wpa_psk, wpa2_psk, wpa_wpa2_psk
  */
-class ClassEsp8266WiFi {
+class ClassWiFiEsp8266 {
     /**
      * @constructor
      * @param {Object} _rx      - порт rx шины UART, обязательное поле
@@ -38,7 +38,7 @@ class ClassEsp8266WiFi {
         if (this.Instance) {
             return this.Instance;
         } else {
-            ClassEsp8266WiFi.prototype.Instance = this;
+            ClassWiFiEsp8266.prototype.Instance = this;
         }
 
         this._name = 'ClassEsp8266WiFi'; //переопределяем имя типа
@@ -148,4 +148,4 @@ class ClassEsp8266WiFi {
     }
 }
 
-exports = ClassEsp8266WiFi;
+exports = ClassWiFiEsp8266;
