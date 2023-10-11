@@ -90,7 +90,7 @@ class ClassEsp8266WiFi {
                         }                               
                     });
                 });
-                this._wifi.connect(this.ssid, { password : pass }, (err) => {
+                this._wifi.connect(this._ssid, { password : pass }, (err) => {
                     if (err) {
                         throw err;
                     }
