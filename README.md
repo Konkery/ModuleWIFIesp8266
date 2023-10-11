@@ -11,57 +11,45 @@
 # Описание
 <div style = "font-family: 'Open Sans', sans-serif; font-size: 16px; color: #555">
 
-Модуль предназначен для реализации логики WiFi соединения с использованием чипа [Esp8266](https://github.com/AlexGlgr/ModuleMeteoLPS25HB/blob/fork-Alexander/res/LPS331AP_STMicroelectronics.pdf). Модуль динамически создаваёт и добавляет в контейнер новый объект I2C шины и предоставляет прикладным классам экземпляры объектов, а также хранит информацию о том - занята данная, конкретная шина или нет. Модуль хранит экземпляры предопределенных в Espruino I2C шин (I2C1, I2C2, I2C3), а также создает soft шины I2C. При создании возвращается объект типа I2C шина. Модуль является неотъемлемой частью фреймворка EcoLite. Модуль работает в режиме синглтон. Для корректной работы фреймворка необходимо создать глобальный объект с именем I2Cbus. Модуль имеет следующие архитектурные решения фреймворка EcoLite:
+Модуль предназначен для реализации логики WiFi соединения с использованием чипа [Esp8266](https://github.com/AlexGlgr/ModuleMiddleWIFIesp8266/blob/fork-Alexander/res/0a-esp8266ex_datasheet_en.pdf). Модуль автоматически проверяет присутствие в системе Espruino базовых модулей для работы с WiFi, что свидетельствует о встроеном в плату чипе, и, если модули отсутствуют, автоматически подключает базовый модуль для работы с периферийным чипом, с которым модуль работает по Serial интерфейсу. Модуль является неотъемлемой частью фреймворка EcoLite. Модуль работает в режиме синглтон. Модулю необходим конфигурационный файл с именем APs.json. Для корректной работы фреймворка необходимо создать глобальный объект с именем wifi. Модуль имеет следующие архитектурные решения фреймворка EcoLite:
+- создаёт шину через глобальный объект [UARTbus](https://github.com/AlexGlgr/ModuleBaseI2CBus/blob/fork-Alexander/README.md);
 - при проверке валидности данных использует ошибку класса [Error](https://github.com/Konkery/ModuleAppError/blob/main/README.md);
 - при проверке переменной на целочисленное использует класс [NumIs](https://github.com/Konkery/ModuleAppMath/blob/main/README.md).
 
 ### **Конструктор**
-Конструктор не принимает никаких значений, и при создании объекта класса произойдёт разовое занесение в массив существующих в системе шин. Массив содержит объекты с двумя полями: непосредственно объект шины и идентификатор *true/false* об её использовании в системе. Пример объекта массива:
-```js
-this._I2CBus[] = {
-    IDBus: I2C{};
-    Used: true;
-}
+Конструктор принимает пины *_rx* и *_tx*, которые используются для работы с периферийным чипом. В случае присутствия на плате встроенного чипа передаваемые поля не будут использованы и их можно оставить пустыми. Для работы необходим конфигурациооный файл, содержащий SSID и пароль сети, к которой необходимо подключится. Пример файла конфигурациооного файла APs.json:
+```json
+[
+    {
+        "ssid":"ssid",
+        "pass":"password"
+    }
+]
 ```
 
 ### **Поля**
-- <mark style="background-color: lightblue">_I2Cbus</mark> - массив-контейнер с I2C шинами;
-- <mark style="background-color: lightblue">_pattern</mark> - строка-ключ, для всех объектов шин;
-- <mark style="background-color: lightblue">_indexBus</mark> - индекс софтверной шины. Начальный - 10, конкатенацией с полем _pattern составляет имя нового объекта-шины.
+- <mark style="background-color: lightblue">_name</mark> - имя класса в строковом виде;
+- <mark style="background-color: lightblue">_wifi_</mark> - объект базового класса, непосредственно работающего с чипом;
+- <mark style="background-color: lightblue">_bus</mark> - Serial шина для работы с периферийным чипом;
+- <mark style="background-color: lightblue">_ssid</mark> - ssid сети, к которой осуществляется подключение;
+- <mark style="background-color: lightblue">_ip_</mark> - ip-адрес сети, к которой осуществляется подключение;
 
 ### **Методы**
-- <mark style="background-color: lightblue">Init()</mark> - заносит в массив-контейнер существующие в системе I2C шины, запускается в конструкторе;
-- <mark style="background-color: lightblue">AddBus(_opts)</mark> - создаёт новую софтверную шину и заносит её в массив-контейнер.
-Принимает объект *_opts*, содержащий пины и битрейт создаваемой шины. Метод проводит проверку валидности данных. Пример объектра *_opts*:
-```js
-let _opts = {
-    sda: B7;
-    sdl: B6;
-    bitrate: 115200;
-}
-```
-Метод возвращает объект, содержащий имя шины и объект I2C. Пример:
-```js
-return {
-    NameBus: 'I2C10';
-    IDBus: I2C{};
-}
-```
+- <mark style="background-color: lightblue">Init(_rx, _tx)</mark> - осуществляет соединение с wifi сетью, указанной в конфигурационном файле, если та существует;
+- <mark style="background-color: lightblue">InitBus(_rx, _tx)</mark> - создаёт новую Serial шину для работы с периферийным чипом.
+Вызывается внутри метода *Init()*, если отсутствует встроенный модуль WiFi.
 
 ### **Примеры**
 Фрагмент кода для создание софтверной шины. Предполагается, что все необходимые модули уже загружены в систему:
 ```js
 //Подключение необходимых модулей
-const ClassI2CBus = require('ClassBaseI2CBus.min');
-const err = require('ModuleAppError.min');
-const NumIs = require('ModuleAppMath.min');
-     NumIs.is(); //добавить функцию проверки целочисленных чисел в Number
+const ClassWifi = require('ClassMiddleWIFIesp8266.min.js');
+const ClassUARTBus = require ('ClassBaseUARTBus.min.js');
 
-//Создание I2C шины
-let I2Cbus = new ClassI2CBus();
-let bus = I2Cbus.AddBus({sda: P5, scl: P4, bitrate: 100000}).IDbus;
+let UARTbus = new ClassUARTBus();
+let wifi = new ClassWifi(B9, B10);
 
-console.log(I2Cbus);
+console.log(wifi);
 ```
 Вывод созданнного объекта в консоль:
 <p align="left">
