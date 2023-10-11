@@ -16,7 +16,7 @@
 - при проверке валидности данных использует ошибку класса [Error](https://github.com/Konkery/ModuleAppError/blob/main/README.md);
 - при проверке переменной на целочисленное использует класс [NumIs](https://github.com/Konkery/ModuleAppMath/blob/main/README.md).
 
-### **Конструктор**
+### Конструктор
 Конструктор принимает пины *_rx* и *_tx*, которые используются для работы с периферийным чипом. В случае присутствия на плате встроенного чипа передаваемые поля не будут использованы и их можно оставить пустыми. Для работы необходим конфигурациооный файл, содержащий SSID и пароль сети, к которой необходимо подключится. Пример файла конфигурациооного файла APs.json:
 ```json
 [
@@ -27,19 +27,19 @@
 ]
 ```
 
-### **Поля**
+### Поля
 - <mark style="background-color: lightblue">_name</mark> - имя класса в строковом виде;
 - <mark style="background-color: lightblue">_wifi_</mark> - объект базового класса, непосредственно работающего с чипом;
 - <mark style="background-color: lightblue">_bus</mark> - Serial шина для работы с периферийным чипом;
 - <mark style="background-color: lightblue">_ssid</mark> - ssid сети, к которой осуществляется подключение;
 - <mark style="background-color: lightblue">_ip_</mark> - ip-адрес сети, к которой осуществляется подключение;
 
-### **Методы**
+### Методы
 - <mark style="background-color: lightblue">Init(_rx, _tx)</mark> - осуществляет соединение с wifi сетью, указанной в конфигурационном файле, если та существует;
 - <mark style="background-color: lightblue">InitBus(_rx, _tx)</mark> - создаёт новую Serial шину для работы с периферийным чипом.
 Вызывается внутри метода *Init()*, если отсутствует встроенный модуль WiFi.
 
-### **Примеры**
+### Примеры
 Фрагмент кода для создание wifi. Предполагается, что все необходимые модули уже загружены в систему:
 ```js
 //Подключение необходимых модулей
@@ -56,4 +56,9 @@ console.log(wifi);
 <p align="left">
   <img src="./res/output.png" title="hover text">
 </p>
+
+# Зависимости
+- <mark style="background-color: lightblue">[**ClassBaseUARTBus.min.js**](https://github.com/AlexGlgr/ModuleBaseUARTbus/blob/fork-Alexander/README.md)</mark>
+- <mark style="background-color: lightblue">[**ModuleAppError**](https://github.com/Konkery/ModuleAppError/blob/main/README.md)</mark>
+- <mark style="background-color: lightblue">[**ModuleAppMath**](https://github.com/Konkery/ModuleAppMath/blob/main/README.md)</mark>
 </div>
