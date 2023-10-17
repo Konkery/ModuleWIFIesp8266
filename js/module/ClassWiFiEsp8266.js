@@ -41,11 +41,12 @@ class ClassWiFiEsp8266 {
             ClassWiFiEsp8266.prototype.Instance = this;
         }
 
-        this._name = 'ClassEsp8266WiFi'; //переопределяем имя типа
-        this._wifi = undefined;
-        this._bus = undefined;
-        this._ssid = undefined;
-        this._ip = undefined;
+        this._Name = 'ClassEsp8266WiFi'; //переопределяем имя типа
+        this._Wifi = undefined;
+        this._Bus = undefined;
+        this._Ssid = undefined;
+        this._Scan = undefined;
+        this._Ip = undefined;
         this.Init(_rx, _tx);
 	}
     /**
@@ -57,7 +58,7 @@ class ClassWiFiEsp8266 {
     InitBus(_rx, _tx) {
         if (_rx && _tx) {
             let opt = {rx: _rx, tx: _tx, baud: 115200};
-            this._bus = UARTbus.AddBus(opt);
+            this._Bus = UARTbus.AddBus(opt);
         }
     }
     /**
@@ -69,10 +70,10 @@ class ClassWiFiEsp8266 {
      */
     Init(_rx, _tx) {
         if (process.env.MODULES.includes("Wifi")) {
-            this._wifi = require("Wifi");
+            this._Wifi = require("Wifi");
             let pass;
-            this._wifi.scan((aps) => {
-                console.log(aps);
+            this._Wifi.scan((aps) => {
+                this._Scan = aps;
                 let s = require("Storage");
                 if (!(s.list().includes("APs.json"))) {
                     throw "No JSON file found!";
@@ -83,20 +84,20 @@ class ClassWiFiEsp8266 {
                 found.forEach(fName => {
                     wrt.forEach(sName => {
                         if (fName == sName.ssid) {
-                            this._ssid = sName.ssid;
+                            this._Ssid = sName.ssid;
                             pass = sName.pass;
                         }                               
                     });
                 });
-                this._wifi.connect(this._ssid, { password : pass }, (err) => {
+                this._Wifi.connect(this._Ssid, { password : pass }, (err) => {
                     if (err) {
                         throw err;
                     }
-                    this._wifi.getIP((err, info) => {
+                    this._Wifi.getIP((err, info) => {
                         if (err) {
                             throw err;
                         }
-                        this._ip = info.ip;            
+                        this._Ip = info.ip;            
                     });
                 });
             });
@@ -104,15 +105,17 @@ class ClassWiFiEsp8266 {
         else {
             this.InitBus(_rx, _tx);
             let pass;
-            this._wifi = require("https://raw.githubusercontent.com/AlexGlgr/ModuleMiddleWIFIesp8266/fork-Alexander/js/module/ClassBaseWIFIesp8266.min.js").setup(this._bus, (err) => {
+            PrimarySerial.setup(115200);
+            this._Wifi = require("ClassBaseWIFIesp8266.min.js").setup(PrimarySerial, ((err) => {
                 if (err) {
-                    throw err;
+                    throw err;                    
                 }
-                this._wifi.getAPs((err, aps) => {
+                this._Wifi.getAPs((err, aps) => {
                     if (err) {
                         throw err;
                     }
                     else {
+                        this._Scan = aps;
                         let s = require("Storage");
                         if (!(s.list().includes("APs.json"))) {
                             throw "No JSON file found!";
@@ -123,27 +126,27 @@ class ClassWiFiEsp8266 {
                         found.forEach(fName => {
                             wrt.forEach(sName => {
                                 if (fName == sName.ssid) {
-                                    this._ssid = sName.ssid;
+                                    this._Ssid = sName.ssid;
                                     pass = sName.pass;
                                 }                               
                             });
                         });
-                        this._wifi.connect (this._ssid, pass, (err) => {
+                        this._Wifi.connect (this._Ssid, pass, ((err) => {
                             if (err) {
                                 throw err;
                             }
                             else {
-                                this._wifi.getIP((emsg, ipAdress) => {
+                                this._Wifi.getIP((emsg, ipAdress) => {
                                     if (emsg) {
                                         throw err;
                                     }
-                                    this._ip = ipAdress;
+                                    this._Ip = ipAdress;
                                 });
                             }
-                        });
+                        }));
                     }
                 });                
-            });
+            }));
         }            
     }
 }
