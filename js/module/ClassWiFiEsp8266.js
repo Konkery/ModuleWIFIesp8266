@@ -68,7 +68,7 @@ class ClassWiFiEsp8266 {
      * @param {Object} _rx      - порт rx шины UART, нужен для запуска шины
      * @param {Object} _tx      - порт tx шины UART, нужен для запуска шины
      */
-    Init(_rx, _tx) {
+    Init(nc, bus, callback) {
         if (process.env.MODULES.includes("Wifi")) {
             this._Wifi = require("Wifi");
             let pass;
@@ -103,7 +103,7 @@ class ClassWiFiEsp8266 {
             });
         }
         else {
-            this.InitBus(_rx, _tx);
+            //this.InitBus(_rx, _tx);
             let pass;
             PrimarySerial.setup(115200);
             this._Wifi = require("ClassBaseWIFIesp8266.min.js").setup(PrimarySerial, ((err) => {
@@ -141,6 +141,7 @@ class ClassWiFiEsp8266 {
                                         throw err;
                                     }
                                     this._Ip = ipAdress;
+                                    callback();
                                 });
                             }
                         }));
