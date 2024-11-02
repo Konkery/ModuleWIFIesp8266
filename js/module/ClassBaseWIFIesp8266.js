@@ -4,10 +4,37 @@ var sockData = ['', '', '', '', ''];
 var MAXSOCKETS = 5;
 var ENCR_FLAGS = ['open', 'wep', 'wpa_psk', 'wpa2_psk', 'wpa_wpa2_psk'];
 
+let mdnsAdr;
+let mdnsPrt;
+
+function udpToIPAndPort(data) {
+  return {
+    ip : data.charCodeAt(0)+"."+data.charCodeAt(1)+"."+data.charCodeAt(2)+"."+data.charCodeAt(3),
+    port : data.charCodeAt(5)<<8 | data.charCodeAt(4),
+    len : data.charCodeAt(7)<<8 | data.charCodeAt(6) // length of data
+  };
+}
+
 var netCallbacks = {
-  create: function(host, port) {
+  create: function(host, port, type) {
     // Create a socket and return its index, host is a string, port is an integer.
     // If host isn't defined, create a server socket
+    if (type == 2) {//UDP socket
+      let sckt = 0;
+      while (socks[sckt]!==undefined) sckt++; // find free socket
+      if (sckt>=MAXSOCKETS) return -7; // SOCKET_ERR_MAX_SOCK
+      sockData[sckt] = "";
+      let cmd = `AT+CIPSTART=${sckt},"UDP","${mdnsAdr}",${mdnsPrt},${mdnsPrt},2\r\n`;
+      socks[sckt] = "UDP";
+      sockUDP[sckt] = true;
+      at.cmd(cmd,10000,function cb(d) {
+        //console.log("CIPSTART "+JSON.stringify(d));
+        if (d=="ALREADY CONNECTED") return cb; // we're expecting an ERROR too
+        // x,CONNECT should have been received between times. If it hasn't appeared, it's an error.
+        if (d!="OK") socks[sckt] = -6; // SOCKET_ERR_NOT_FOUND
+      });
+    }
+    else {
     var sckt;
     var self = this;
     if (host === undefined) {
@@ -26,47 +53,49 @@ var netCallbacks = {
         }
       });
       return MAXSOCKETS;
-    } else {
-      sckt = 0;
-      while (socks[sckt] !== undefined) {
-        sckt++; // find free socket
-      }
-      if (sckt >= MAXSOCKETS) {
-        // throw new Error('No free sockets');
-        self.emit('err', 'No free sockets');
-        return null;
-      }
-      socks[sckt] = 'Wait';
-      sockData[sckt] = '';
-      at.cmd(
-        'AT+CIPSTART=' +
-          sckt +
-          ',"TCP",' +
-          JSON.stringify(host) +
-          ',' +
-          port +
-          '\r\n',
-        10000,
-        function cb(d) {
-          if (d === sckt + ',CONNECT') {
-            socks[sckt] = true;
-            return cb;
-          }
-          if (d === 'OK') {
-            at.registerLine(sckt + ',CLOSED', function() {
-              at.unregisterLine(sckt + ',CLOSED');
-              socks[sckt] = undefined;
-            });
-          } else {
-            socks[sckt] = undefined;
-            // setTimeout(function() {
-            //  throw new Error('CIPSTART failed ('+(d?d:'Timeout')+')');
-            // }, 0);
-            self.emit('err', 'CIPSTART failed (' + (d ? d : 'Timeout') + ')');
-          }
+      } else {
+        sckt = 0;
+        while (socks[sckt] !== undefined) {
+          sckt++; // find free socket
         }
-      );
+        if (sckt >= MAXSOCKETS) {
+          // throw new Error('No free sockets');
+          self.emit('err', 'No free sockets');
+          return null;
+        }
+        socks[sckt] = 'Wait';
+        sockData[sckt] = '';
+        at.cmd(
+          'AT+CIPSTART=' +
+            sckt +
+            ',"TCP",' +
+            JSON.stringify(host) +
+            ',' +
+            port +
+            '\r\n',
+          10000,
+          function cb(d) {
+            if (d === sckt + ',CONNECT') {
+              socks[sckt] = true;
+              return cb;
+            }
+            if (d === 'OK') {
+              at.registerLine(sckt + ',CLOSED', function() {
+                at.unregisterLine(sckt + ',CLOSED');
+                socks[sckt] = undefined;
+              });
+            } else {
+              socks[sckt] = undefined;
+              // setTimeout(function() {
+              //  throw new Error('CIPSTART failed ('+(d?d:'Timeout')+')');
+              // }, 0);
+              self.emit('err', 'CIPSTART failed (' + (d ? d : 'Timeout') + ')');
+            }
+          }
+        );
+      }
     }
+    console.log(socks[sckt]);
     return sckt;
   },
   // Close the socket. returns nothing
@@ -99,7 +128,25 @@ var netCallbacks = {
   // Receive data. Returns a string (even if empty).
   // If non-string returned, socket is then closed
   recv: function(sckt, maxLen) {
-    if (at.isBusy() || socks[sckt] === 'Wait') {
+
+    console.log('Recv', socks[sckt]);
+    if (sockData[sckt]) {
+      var r;
+      if (sockData[sckt].length > maxLen) {
+        r = sockData[sckt].substr(0,maxLen);
+        sockData[sckt] = sockData[sckt].substr(maxLen);
+      } else {
+        r = sockData[sckt];
+        sockData[sckt] = "";
+        if (socks[sckt]=="DataClose")
+          socks[sckt] = undefined;
+      }
+      return r;
+    }
+    if (socks[sckt]<0) return socks[sckt]; // report an error
+    if (!socks[sckt]) return -1; // close it
+    return "";
+    /*if (at.isBusy() || socks[sckt] === 'Wait') {
       return '';
     }
     if (sockData[sckt]) {
@@ -116,49 +163,89 @@ var netCallbacks = {
     if (!socks[sckt]) {
       return -1; // close it
     }
-    return '';
+    return '';*/
   },
   // Send data. Returns the number of bytes sent - 0 is ok.
   // Less than 0
   send: function(sckt, data) {
-    if (at.isBusy() || socks[sckt] === 'Wait') {
-      return 0;
-    }
-    if (!socks[sckt]) {
-      return -1; // error - close it
-    }
-    // console.log('Send',sckt,data);
-    var cmd = 'AT+CIPSEND=' + sckt + ',' + data.length + '\r\n';
-    at.cmd(cmd, 10000, function cb(d) {
-      if (d === 'OK') {
-        at.register('> ', function() {
+    if (socks[sckt] === 'UDP') {
+      let d = udpToIPAndPort(data);
+      let extra = ',"'+d.ip+'",'+d.port;
+      data = data.substr(8,d.len);
+      let returnVal = 8+d.len;
+
+      console.log(d);
+
+      at.cmd(`AT+CIPSEND=${sckt},${data.length+extra}\r\n`, 2000, function cb(d) {
+        //console.log("SEND "+JSON.stringify(d));
+        if (d=="OK") {
+          at.register('> ', function(l) {
+            at.unregister('> ');
+            at.write(data);
+            return l.substr(2);
+          });
+        } else if (d=="Recv "+data.length+" bytes" || d=="busy s...") {
+          console.log(d);
+          // all good, we expect this
+          // Not sure why we get "busy s..." in this case (2 sends one after the other) but it all seems ok.
+        } else if (d=="SEND OK") {
+          // we're ready for more data now
+          if (socks[sckt]=="WaitClose") netCallbacks.close(sckt);
+          console.log(d);
+          socks[sckt]=true;
+          return;
+        } else {
+          console.log(d);
+          socks[sckt]=undefined; // uh-oh. Error. If undefined it was probably a timeout
           at.unregister('> ');
-          at.write(data);
-          return '';
-        });
-        return cb;
-      } else if (d === 'Recv ' + data.length + ' bytes') {
-        // all good, we expect this
-        return cb;
-      } else if (d === 'SEND OK') {
-        // we're ready for more data now
-        if (socks[sckt] === 'WaitClose') {
-          netCallbacks.close(sckt);
+          return;
         }
-        socks[sckt] = true;
-      } else {
-        socks[sckt] = undefined; // uh-oh. Error.
-        at.unregister('> ');
+        return cb;
+      });
+      // if we obey the above, we shouldn't get the 'busy p...' prompt
+      socks[sckt]="Wait"; // wait for data to be sent
+      return returnVal;
+    } else {
+      if (at.isBusy() || socks[sckt] === 'Wait') {
+        return 0;
       }
-    });
-    // if we obey the above, we shouldn't get the 'busy p...' prompt
-    socks[sckt] = 'Wait'; // wait for data to be sent
-    return data.length;
+      if (!socks[sckt]) {
+        return -1; // error - close it
+      }
+      // console.log('Send',sckt,data);
+      var cmd = 'AT+CIPSEND=' + sckt + ',' + data.length + '\r\n';
+      at.cmd(cmd, 10000, function cb(d) {
+        if (d === 'OK') {
+          at.register('> ', function() {
+            at.unregister('> ');
+            at.write(data);
+            return '';
+          });
+          return cb;
+        } else if (d === 'Recv ' + data.length + ' bytes') {
+          // all good, we expect this
+          return cb;
+        } else if (d === 'SEND OK') {
+          // we're ready for more data now
+          if (socks[sckt] === 'WaitClose') {
+            netCallbacks.close(sckt);
+          }
+          socks[sckt] = true;
+        } else {
+          socks[sckt] = undefined; // uh-oh. Error.
+          at.unregister('> ');
+        }
+      });
+      // if we obey the above, we shouldn't get the 'busy p...' prompt
+      socks[sckt] = 'Wait'; // wait for data to be sent
+      return data.length;
+    }
   }
 };
 
 // Handle +IPD input data from ESP8266
 function ipdHandler(line) {
+  console.log('Handler called');
   var colon = line.indexOf(':');
   if (colon < 0) {
     return line; // not enough data here at the moment
@@ -166,15 +253,46 @@ function ipdHandler(line) {
   var parms = line.substring(5, colon).split(',');
   parms[1] = 0 | parms[1];
   var len = line.length - (colon + 1);
+  var sckt = parms[0];
+  if (sockUDP[sckt]) {
+    var ip = (parms[2]||"0.0.0.0").split(".").map(function(x){return 0|x;});
+    var p = 0|parms[3]; // port
+    sockData[sckt] += String.fromCharCode(ip[0],ip[1],ip[2],ip[3],p&255,p>>8,len&255,len>>8);
+  }
   if (len >= parms[1]) {
     // we have everything
     sockData[parms[0]] += line.substr(colon + 1, parms[1]);
     return line.substr(colon + parms[1] + 1); // return anything else
   } else {
     // still some to get
-    sockData[parms[0]] += line.substr(colon + 1, len);
-    return '+IPD,' + parms[0] + ',' + (parms[1] - len) + ':'; // return IPD so we get called next time
+    /*sockData[parms[0]] += line.substr(colon + 1, len);
+    return '+IPD,' + parms[0] + ',' + (parms[1] - len) + ':'; // return IPD so we get called next time*/
+    sockData[sckt] += line.substr(colon+1,len);
+    at.getData(parms[1]-len, function(data) { sockData[sckt] += data; });
+    return "";
   }
+}
+
+function sckOpen(ln) {
+  var sckt = ln[0];
+  //console.log("SCKOPEN", JSON.stringify(ln),"current",JSON.stringify(socks[sckt]));
+  if (socks[sckt]===undefined && socks[MAXSOCKETS]) {
+    // if we have a server and the socket randomly opens, it's a new connection
+    socks[sckt] = "Accept";
+  } else if (socks[sckt]=="Wait") {
+    // everything's good - we're connected
+    socks[sckt] = true;
+  } else {
+    // Otherwise we had an error - timeout? but it's now open. Close it.
+    at.cmd('AT+CIPCLOSE='+sckt+'\r\n',1000, function() {
+      socks[sckt] = undefined;
+    });
+  }
+}
+
+function sckClosed(ln) {
+  //console.log("CLOSED", JSON.stringify(ln));
+  socks[ln[0]] = sockData[ln[0]]!="" ? "DataClose" : undefined;
 }
 
 var ESP8266 = {
@@ -369,8 +487,38 @@ var ESP8266 = {
         }
       }
     );
+  },
+  setIP: function(settings, callback) {
+    var cmd, timeout;
+    if (typeof settings!="object" || !settings.ip) {
+      cmd = "AT+CWDHCP_CUR=1,1\r\n";
+      timeout = 20000;
+    } else {
+      var args = [JSON.stringify(settings.ip)];
+      if (settings.gw) {
+        args.push(JSON.stringify(settings.gw));
+        args.push(JSON.stringify(settings.netmask||"255.255.255.0"));
+      }
+      cmd = "AT+CIPSTA_CUR="+args.join(",")+"\r\n";
+      timeout = 3000;
+    }
+    at.cmd(cmd, timeout, function(d) {
+      if (d=="OK") callback(null);
+      else return callback("setIP failed: "+(d?d:"Timeout"));
+    });
+  },
+  setMDNS: function(hostname, serviceType, port, callback) {
+    //at.cmd("AT+MDNS=1,\"espressif\",\"_printer\",35,\"my_instance\",\"_tcp\",2,\"product\",\"my_printer\",\"firmware_version\",\"AT-V3.4.1.0\"\r\n", 500, function(d) {
+    at.cmd("AT+MDNS=1,\""+ hostname + "\",\""+ serviceType + "\"," + port +"\r\n",500,function(d) {
+      callback(d=="OK"?null:d);
+    });
+  },
+  setSNTP: function(hostname, port) {
+    mdnsAdr = hostname;
+    mdnsPrt = port;
   }
 };
+
 
 exports.setup = function(usart, connectedCallback) {
   if (typeof usart === 'function') {
@@ -379,7 +527,7 @@ exports.setup = function(usart, connectedCallback) {
     usart.setup(115200);
   }
 
-  ESP8266.at = at = require('AT').connect(usart);
+  ESP8266.at =  at = require('AT').connect(usart);
   require('NetworkJS').create(netCallbacks);
 
   netCallbacks.on('err', function(e) {
@@ -387,6 +535,16 @@ exports.setup = function(usart, connectedCallback) {
   });
 
   at.register('+IPD', ipdHandler);
+  at.registerLine("0,CONNECT", sckOpen);
+  at.registerLine("1,CONNECT", sckOpen);
+  at.registerLine("2,CONNECT", sckOpen);
+  at.registerLine("3,CONNECT", sckOpen);
+  at.registerLine("4,CONNECT", sckOpen);
+  at.registerLine("0,CLOSED", sckClosed);
+  at.registerLine("1,CLOSED", sckClosed);
+  at.registerLine("2,CLOSED", sckClosed);
+  at.registerLine("3,CLOSED", sckClosed);
+  at.registerLine("4,CLOSED", sckClosed);
 
   ESP8266.reset(connectedCallback);
 
